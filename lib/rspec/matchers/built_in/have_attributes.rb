@@ -10,6 +10,7 @@ module RSpec
 
         def initialize(expected)
           @expected = expected
+          @values = {}
           @respond_to_failed = false
         end
 
@@ -39,7 +40,9 @@ module RSpec
         # @api private
         # @return [String]
         def failure_message
-          respond_to_failure_message_or { super }
+          respond_to_failure_message_or do
+            "expected #{actual.inspect} to #{description} but had attributes #{ formatted_values }"
+          end
         end
 
         # @api private
@@ -58,7 +61,19 @@ module RSpec
 
         def actual_has_attribute?(attribute_key, attribute_value)
           actual_value = actual.__send__(attribute_key)
+          cache_value attribute_key, actual_value
           values_match?(attribute_value, actual_value)
+        end
+
+        def cache_value(key, value)
+          @values[key] = dup(value)
+        end
+
+        # some objects respond to dup but can't be dupped
+        def dup(value)
+          value.dup
+        rescue
+          value
         end
 
         def respond_to_attributes?
@@ -77,6 +92,10 @@ module RSpec
           else
             improve_hash_formatting(yield)
           end
+        end
+
+        def formatted_values
+          improve_hash_formatting(@values.inspect)
         end
       end
     end
