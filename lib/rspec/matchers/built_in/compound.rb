@@ -36,6 +36,14 @@ module RSpec
           NestedEvaluator.matcher_expects_call_stack_jump?(matcher_2)
         end
 
+        def matcher_1_matches?
+          @evaluator.matcher_matches?(matcher_1)
+        end
+
+        def matcher_2_matches?
+          @evaluator.matcher_matches?(matcher_2)
+        end
+
       private
 
         def initialize_copy(other)
@@ -85,14 +93,6 @@ module RSpec
 
         def singleline_message(message_1, message_2)
           [message_1, conjunction, message_2].join(' ')
-        end
-
-        def matcher_1_matches?
-          @evaluator.matcher_matches?(matcher_1)
-        end
-
-        def matcher_2_matches?
-          @evaluator.matcher_matches?(matcher_2)
         end
 
         def matcher_supports_block_expectations?(matcher)

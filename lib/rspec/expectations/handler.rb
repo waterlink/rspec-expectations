@@ -31,7 +31,9 @@ module RSpec
         message = message.call if message.respond_to?(:call)
         message ||= matcher.__send__(failure_message_method)
 
-        if matcher.respond_to?(:diffable?) && matcher.diffable?
+        if ::RSpec::Matchers::BuiltIn::Compound === matcher
+          ::RSpec::Expectations.compound_fail_with matcher, message, matcher.actual
+        elsif matcher.respond_to?(:diffable?) && matcher.diffable?
           ::RSpec::Expectations.fail_with message, matcher.expected, matcher.actual
         else
           ::RSpec::Expectations.fail_with message
